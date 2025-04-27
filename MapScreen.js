@@ -53,7 +53,7 @@ const MapScreen = () => {
         #controlsContainer {
           position: absolute;
           top: 10px;
-          left: 10px;
+          left: 50px;
           z-index: 1000;
           background: white;
           padding: 5px;
@@ -62,7 +62,7 @@ const MapScreen = () => {
           display: flex;
           flex-direction: column;
           gap: 5px;
-          width:92%;
+          width:84%;
         }
         #locationInput {
           border: 1px solid #ccc;
@@ -116,7 +116,7 @@ const MapScreen = () => {
           <button id="searchMarkerButton">Search Marker</button>
         </div>
         <!-- NEW CODE: Button for live location tracking -->
-        <button id="liveLocationButton">Live Location</button>
+        <!-- <button id="liveLocationButton">Live Location</button> -->
       </div>
       <div id="map"></div>
 
@@ -140,7 +140,7 @@ const MapScreen = () => {
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
       <script>
         // Initialize the map centered on Paris by default
-        var map = L.map('map').setView([48.8583, 2.2944], 13);
+        var map = L.map('map').setView([28.36131, 75.59212], 15);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
         }).addTo(map);
@@ -150,13 +150,13 @@ const MapScreen = () => {
 
         // EXTRA CODE: Function to load all markers from your backend API
         function loadMarkers() {
-          fetch('http://localhost:3000/api/markers')  // Adjust URL based on your environment
+          fetch('http://192.168.183.172:3000/api/markers')  // Adjust URL based on your environment
             .then(response => response.json())
             .then(data => {
               data.forEach(function(item) {
                 L.marker([item.lat, item.lon])
                   .addTo(map)
-                  .bindPopup('<b>' + item.name + '</b>');
+                  .bindPopup('<b>' + item.name + '</b><br/>Was here at - <small>' + item.createdAt + '</small>');
               });
             })
             .catch(error => {
@@ -202,7 +202,7 @@ const MapScreen = () => {
             return;
           }
           // Fetch all markers and filter by name
-          fetch('http://localhost:3000/api/markers')
+          fetch('http://192.168.183.172:3000/api/markers')
             .then(response => response.json())
             .then(data => {
               var matchingMarkers = data.filter(function(item) {
@@ -316,7 +316,7 @@ const MapScreen = () => {
           L.marker([lat, lon]).addTo(map)
             .bindPopup('<b>' + name + '</b>').openPopup();
 
-          fetch('http://localhost:3000/api/markers', {
+          fetch('http://192.168.183.172:3000/api/markers', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: name, lat: lat, lon: lon })
@@ -328,10 +328,10 @@ const MapScreen = () => {
             return response.json();
           })
           .then(data => {
-            console.log('Marker saved:', data);
+            alert('Marker saved.');
           })
           .catch(error => {
-            console.error('Error saving marker:', error);
+            alert('Error saving marker:', error);
           });
           hideModal();
         });
@@ -342,7 +342,7 @@ const MapScreen = () => {
         document.getElementById('searchButton').addEventListener('click', searchLocation);
         document.getElementById('searchMarkerButton').addEventListener('click', searchMarkerByName);
         // NEW CODE: Event listener for live location tracking button
-        document.getElementById('liveLocationButton').addEventListener('click', liveLocation);
+        //document.getElementById('liveLocationButton').addEventListener('click', liveLocation);
         document.getElementById('locationInput').addEventListener('keyup', function(e) {
           if (e.key === 'Enter') {
             searchLocation();
